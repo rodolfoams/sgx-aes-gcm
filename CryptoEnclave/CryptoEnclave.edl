@@ -1,0 +1,29 @@
+enclave {
+    trusted {
+		/*
+		* This function decrypts a message.
+		* @param encMessageIn
+		*	the encrypted message containing MAC + IV + encrypted message.
+		* @param len
+		*	the length of the encMessageIn.
+		* @param decMessageOut
+		*	the destination of the decrypted message.
+		* @param lenOut
+		*	the length of the decMessageOut.
+		*/
+        public void decryptMessage([in,size=len] char *encMessageIn, size_t len, [out,size=lenOut] char *decMessageOut, size_t lenOut);
+		
+		/*
+		* This function encrypts a message.
+		* @param decMessageIn
+		*	the original message
+		* @param len
+		*	the length of the decMessageIn.
+		* @param encMessageOut
+		*	the destination of the encrypted message containing MAC + IV + encrypted message.
+		* @param lenOut
+		*	the length of the encMessageOut.
+		*/
+		public void encryptMessage([in,size=len] char *decMessageIn, size_t len, [out,size=lenOut] char *encMessageOut, size_t lenOut);
+    };
+};
