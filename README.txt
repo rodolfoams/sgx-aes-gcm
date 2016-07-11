@@ -16,5 +16,5 @@ How to Build/Execute the Application
     f. Simulation Mode, Release build:
         $ make
 3. Execute the binary directly:
-    $ ./app
+    $ ./cryptoApp
 
