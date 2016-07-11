@@ -22,6 +22,7 @@ void decryptMessage(char *encMessageIn, size_t len, char *decMessageOut, size_t 
 		NULL, 0,
 		(sgx_aes_gcm_128bit_tag_t *) encMessage);
 	memcpy(decMessageOut, p_dst, lenOut);
+        emit_debug((char *) p_dst);
 }
 
 void encryptMessage(char *decMessageIn, size_t len, char *encMessageOut, size_t lenOut)

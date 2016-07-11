@@ -16,6 +16,12 @@
 
 #define ENCLAVE_FILE "CryptoEnclave.signed.so"
 
+void emit_debug(const char *buf)
+
+{
+    printf("DEBUG: %s\n", buf);
+}
+
 int main()
 {
 	printf("Starting app...\n");
