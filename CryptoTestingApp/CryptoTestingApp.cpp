@@ -1,16 +1,20 @@
 // CryptoTestingApp.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
-#include <tchar.h>
 #include <string.h>
 
 #include "sgx_urts.h"
 #include "CryptoEnclave_u.h"
 
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+
 #define BUFLEN 2048
 #define SGX_AESGCM_MAC_SIZE 16
 #define SGX_AESGCM_IV_SIZE 12
+
+#define ENCLAVE_FILE "CryptoEnclave.signed.so"
 
 int main()
 {
@@ -22,7 +26,7 @@ int main()
 	sgx_launch_token_t token = { 0 };
 	int token_updated = 0;
 	
-	ret = sgx_create_enclave(_T("CryptoEnclave.signed.dll"), SGX_DEBUG_FLAG, &token, &token_updated, &eid, NULL);
+	ret = sgx_create_enclave(ENCLAVE_FILE, SGX_DEBUG_FLAG, &token, &token_updated, &eid, NULL);
 	if (ret != SGX_SUCCESS)
 	{
 		printf("sgx_create_enclave failed: %#x\n", ret);
