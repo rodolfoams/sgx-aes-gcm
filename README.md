@@ -7,26 +7,32 @@
 ```bash
     $ make SGX_MODE=HW SGX_DEBUG=1
 ```
+
     b. Hardware Mode, Pre-release build:
 ```bash
     $ make SGX_MODE=HW SGX_PRERELEASE=1
 ```
+
     c. Hardware Mode, Release build:
 ```bash
     $ make SGX_MODE=HW
 ```
+
     d. Simulation Mode, Debug build:
 ```bash
     $ make SGX_DEBUG=1
 ```
+
     e. Simulation Mode, Pre-release build:
 ```bash
     $ make SGX_PRERELEASE=1
 ```
+
     f. Simulation Mode, Release build:
 ```bash
     $ make
 ```
+
 3. Execute the binary directly:
 ```bash
     $ ./cryptoTestingApp
