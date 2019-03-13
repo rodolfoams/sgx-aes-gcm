@@ -71,7 +71,6 @@ App_Cpp_Objects := $(App_Cpp_Files:.cpp=.o)
 App_Name := cryptoTestingApp
 
 ######## CryptoEnclave Settings ########
-
 ifneq ($(SGX_MODE), HW)
 	Trts_Library_Name := sgx_trts_sim
 	Service_Library_Name := sgx_tservice_sim
@@ -80,26 +79,21 @@ else
 	Service_Library_Name := sgx_tservice
 endif
 Crypto_Library_Name := sgx_tcrypto
-
 CryptoEnclave_Cpp_Files := CryptoEnclave/CryptoEnclave.cpp
 CryptoEnclave_Include_Paths := -IInclude -ICryptoEnclave -I$(SGX_SDK)/include -I$(SGX_SDK)/include/tlibc -I$(SGX_SDK)/include/stlport
-
 CryptoEnclave_C_Flags := $(SGX_COMMON_CFLAGS) -nostdinc -fvisibility=hidden -fpie -fstack-protector $(CryptoEnclave_Include_Paths)
 CryptoEnclave_Cpp_Flags := $(CryptoEnclave_C_Flags) -std=c++03 -nostdinc++
 CryptoEnclave_Link_Flags := $(SGX_COMMON_CFLAGS) -Wl,--no-undefined -nostdlib -nodefaultlibs -nostartfiles -L$(SGX_LIBRARY_PATH) \
 	-Wl,--whole-archive -l$(Trts_Library_Name) -Wl,--no-whole-archive \
-	-Wl,--start-group -lsgx_tstdc -lsgx_tstdcxx -l$(Crypto_Library_Name) -l$(Service_Library_Name) -Wl,--end-group \
+	-Wl,--start-group -lsgx_tstdc -lsgx_tcxx -l$(Crypto_Library_Name) -l$(Service_Library_Name) -Wl,--end-group \
 	-Wl,-Bstatic -Wl,-Bsymbolic -Wl,--no-undefined \
 	-Wl,-pie,-eenclave_entry -Wl,--export-dynamic  \
 	-Wl,--defsym,__ImageBase=0 \
 	-Wl,--version-script=CryptoEnclave/CryptoEnclave.lds
-
 CryptoEnclave_Cpp_Objects := $(CryptoEnclave_Cpp_Files:.cpp=.o)
-
 CryptoEnclave_Name := CryptoEnclave.so
 Signed_CryptoEnclave_Name := CryptoEnclave.signed.so
 CryptoEnclave_Config_File := CryptoEnclave/CryptoEnclave.config.xml
-
 ifeq ($(SGX_MODE), HW)
 ifneq ($(SGX_DEBUG), 1)
 ifneq ($(SGX_PRERELEASE), 1)
@@ -107,7 +101,6 @@ Build_Mode = HW_RELEASE
 endif
 endif
 endif
-
 
 .PHONY: all run
 
@@ -130,46 +123,35 @@ ifneq ($(Build_Mode), HW_RELEASE)
 endif
 
 ######## CryptoTestingApp Objects ########
-
 CryptoTestingApp/CryptoEnclave_u.c: $(SGX_EDGER8R) CryptoEnclave/CryptoEnclave.edl
 	@cd CryptoTestingApp && $(SGX_EDGER8R) --untrusted ../CryptoEnclave/CryptoEnclave.edl --search-path ../CryptoEnclave --search-path $(SGX_SDK)/include
 	@echo "GEN  =>  $@"
-
 CryptoTestingApp/CryptoEnclave_u.o: CryptoTestingApp/CryptoEnclave_u.c
 	@$(CC) $(App_C_Flags) -c $< -o $@
 	@echo "CC   <=  $<"
-
 CryptoTestingApp/%.o: CryptoTestingApp/%.cpp
 	@$(CXX) $(App_Cpp_Flags) -c $< -o $@
 	@echo "CXX  <=  $<"
-
 $(App_Name): CryptoTestingApp/CryptoEnclave_u.o $(App_Cpp_Objects)
 	@$(CXX) $^ -o $@ $(App_Link_Flags)
 	@echo "LINK =>  $@"
 
-
 ######## CryptoEnclave Objects ########
-
 CryptoEnclave/CryptoEnclave_t.c: $(SGX_EDGER8R) CryptoEnclave/CryptoEnclave.edl
 	@cd CryptoEnclave && $(SGX_EDGER8R) --trusted ../CryptoEnclave/CryptoEnclave.edl --search-path ../CryptoEnclave --search-path $(SGX_SDK)/include
 	@echo "GEN  =>  $@"
-
 CryptoEnclave/CryptoEnclave_t.o: CryptoEnclave/CryptoEnclave_t.c
 	@$(CC) $(CryptoEnclave_C_Flags) -c $< -o $@
 	@echo "CC   <=  $<"
-
 CryptoEnclave/%.o: CryptoEnclave/%.cpp
 	@$(CXX) $(CryptoEnclave_Cpp_Flags) -c $< -o $@
 	@echo "CXX  <=  $<"
-
 $(CryptoEnclave_Name): CryptoEnclave/CryptoEnclave_t.o $(CryptoEnclave_Cpp_Objects)
 	@$(CXX) $^ -o $@ $(CryptoEnclave_Link_Flags)
 	@echo "LINK =>  $@"
-
 $(Signed_CryptoEnclave_Name): $(CryptoEnclave_Name)
 	@$(SGX_ENCLAVE_SIGNER) sign -key CryptoEnclave/CryptoEnclave_private.pem -enclave $(CryptoEnclave_Name) -out $@ -config $(CryptoEnclave_Config_File)
 	@echo "SIGN =>  $@"
-
 .PHONY: clean
 
 clean:
